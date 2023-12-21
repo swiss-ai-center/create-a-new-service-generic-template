@@ -27,17 +27,18 @@ settings = get_settings()
 class MyService(Service):
     # TODO: 2. CHANGE THIS DESCRIPTION
     """
-    Sample service model
+    My service model
     """
 
     # Any additional fields must be excluded for Pydantic to work
     model: object = Field(exclude=True)
+    logger: object = Field(exclude=True)
 
     def __init__(self):
         super().__init__(
             # TODO: 3. CHANGE THE SERVICE NAME AND SLUG
-            name="Sample Service",
-            slug="sample-service",
+            name="My Service",
+            slug="my-service",
             url=settings.service_url,
             summary=api_summary,
             description=api_description,
@@ -57,6 +58,7 @@ class MyService(Service):
             ],
             has_ai=False,
         )
+        self.logger = get_logger(settings)
 
     # TODO: 5. CHANGE THE PROCESS METHOD (CORE OF THE SERVICE)
     def process(self, data):
@@ -75,10 +77,10 @@ class MyService(Service):
 
 
 # TODO: 6. CHANGE THE API DESCRIPTION AND SUMMARY
-api_description = """Sample service
+api_description = """My service
 bla bla bla...
 """
-api_summary = """Sample service
+api_summary = """My service
 bla bla bla...
 """
 
@@ -91,7 +93,7 @@ app = FastAPI(
     contact={
         "name": "Swiss AI Center",
         "url": "https://swiss-ai-center.ch/",
-        "email": "ia.recherche@hes-so.ch",
+        "email": "info@swiss-ai-center.ch",
     },
     swagger_ui_parameters={
         "tagsSorter": "alpha",
