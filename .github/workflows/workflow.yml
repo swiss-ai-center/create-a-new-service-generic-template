@@ -124,7 +124,7 @@ jobs:
         uses: swiss-ai-center/common-code/.github/actions/prepare-kubernetes-configuration-files@main
         with:
           service-name: ${{ env.SERVICE_NAME }}
-          service-url: ${DEV_SERVICE_URL#*://}
+          service-url: ${{ env.DEV_SERVICE_URL }}
           service-docker-image-tag: ${{ env.SERVICE_DOCKER_IMAGE_SHA_TAG }}
           configuration-files-location: ./kubernetes
           environment: development
@@ -166,7 +166,7 @@ jobs:
         uses: swiss-ai-center/common-code/.github/actions/prepare-kubernetes-configuration-files@main
         with:
           service-name: ${{ env.SERVICE_NAME }}
-          service-url: ${PROD_SERVICE_URL#*://}
+          service-url: ${{ env.PROD_SERVICE_URL }}
           service-docker-image-tag: ${{ env.SERVICE_DOCKER_IMAGE_SHA_TAG }}
           configuration-files-location: ./kubernetes
           environment: production
@@ -176,7 +176,7 @@ jobs:
           engine-announce-retries: ${{ env.PROD_ENGINE_ANNOUNCE_RETRIES }}
           engine-announce-retry-delay: ${{ env.PROD_ENGINE_ANNOUNCE_RETRY_DELAY }}
 
-      - name: Deploy ${{ env.SERVICE_NAME }} on the Kubernetes cluster
+      - name: Deploy service on the Kubernetes cluster
         uses: swiss-ai-center/common-code/.github/actions/execute-command-on-kubernetes-cluster@main
         with:
           kube-config: ${{ env.PROD_KUBE_CONFIG }}
