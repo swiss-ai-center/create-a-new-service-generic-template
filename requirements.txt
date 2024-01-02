@@ -1,1 +1,1 @@
-common-code[test] @ git+https://github.com/swiss-ai-center/core-engine.git@main#subdirectory=common-code
+common-code[test] @ git+https://github.com/swiss-ai-center/common-code.git@main
