@@ -4,7 +4,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from common_code.config import get_settings
-from pydantic import Field
 from common_code.http_client import HttpClient
 from common_code.logger.logger import get_logger
 from common_code.service.controller import router as service_router
@@ -15,7 +14,11 @@ from common_code.tasks.service import TasksService
 from common_code.tasks.models import TaskData
 from common_code.service.models import Service
 from common_code.service.enums import ServiceStatus
-from common_code.common.enums import FieldDescriptionType, ExecutionUnitTagName, ExecutionUnitTagAcronym
+from common_code.common.enums import (
+    FieldDescriptionType,
+    ExecutionUnitTagName,
+    ExecutionUnitTagAcronym,
+)
 from common_code.common.models import FieldDescription, ExecutionUnitTag
 
 # Imports required by the service's model
@@ -31,8 +34,8 @@ class MyService(Service):
     """
 
     # Any additional fields must be excluded for Pydantic to work
-    model: object = Field(exclude=True)
-    logger: object = Field(exclude=True)
+    _model: object
+    _logger: object
 
     def __init__(self):
         super().__init__(
@@ -45,10 +48,18 @@ class MyService(Service):
             status=ServiceStatus.AVAILABLE,
             # TODO: 4. CHANGE THE INPUT AND OUTPUT FIELDS, THE TAGS AND THE HAS_AI VARIABLE
             data_in_fields=[
-                FieldDescription(name="image", type=[FieldDescriptionType.IMAGE_PNG, FieldDescriptionType.IMAGE_JPEG]),
+                FieldDescription(
+                    name="image",
+                    type=[
+                        FieldDescriptionType.IMAGE_PNG,
+                        FieldDescriptionType.IMAGE_JPEG,
+                    ],
+                ),
             ],
             data_out_fields=[
-                FieldDescription(name="result", type=[FieldDescriptionType.APPLICATION_JSON]),
+                FieldDescription(
+                    name="result", type=[FieldDescriptionType.APPLICATION_JSON]
+                ),
             ],
             tags=[
                 ExecutionUnitTag(
@@ -58,7 +69,7 @@ class MyService(Service):
             ],
             has_ai=False,
         )
-        self.logger = get_logger(settings)
+        self._logger = get_logger(settings)
 
     # TODO: 5. CHANGE THE PROCESS METHOD (CORE OF THE SERVICE)
     def process(self, data):
@@ -69,10 +80,7 @@ class MyService(Service):
 
         # NOTE that the result must be a dictionary with the keys being the field names set in the data_out_fields
         return {
-            "result": TaskData(
-                data=...,
-                type=FieldDescriptionType.APPLICATION_JSON
-            )
+            "result": TaskData(data=..., type=FieldDescriptionType.APPLICATION_JSON)
         }
 
 
@@ -106,8 +114,8 @@ app = FastAPI(
 )
 
 # Include routers from other files
-app.include_router(service_router, tags=['Service'])
-app.include_router(tasks_router, tags=['Tasks'])
+app.include_router(service_router, tags=["Service"])
+app.include_router(tasks_router, tags=["Tasks"])
 
 app.add_middleware(
     CORSMiddleware,
@@ -122,6 +130,7 @@ app.add_middleware(
 @app.get("/", include_in_schema=False)
 async def root():
     return RedirectResponse("/docs", status_code=301)
+
 
 service_service: ServiceService | None = None
 
@@ -152,13 +161,17 @@ async def startup_event():
         for engine_url in settings.engine_urls:
             announced = False
             while not announced and retries > 0:
-                announced = await service_service.announce_service(my_service, engine_url)
+                announced = await service_service.announce_service(
+                    my_service, engine_url
+                )
                 retries -= 1
                 if not announced:
                     time.sleep(settings.engine_announce_retry_delay)
                     if retries == 0:
-                        logger.warning(f"Aborting service announcement after "
-                                       f"{settings.engine_announce_retries} retries")
+                        logger.warning(
+                            f"Aborting service announcement after "
+                            f"{settings.engine_announce_retries} retries"
+                        )
 
     # Announce the service to its engine
     asyncio.ensure_future(announce())
