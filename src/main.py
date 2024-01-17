@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from common_code.config import get_settings
 from common_code.http_client import HttpClient
-from common_code.logger.logger import get_logger
+from common_code.logger.logger import get_logger, Logger
 from common_code.service.controller import router as service_router
 from common_code.service.service import ServiceService
 from common_code.storage.service import StorageService
@@ -35,7 +35,7 @@ class MyService(Service):
 
     # Any additional fields must be excluded for Pydantic to work
     _model: object
-    _logger: object
+    _logger: Logger
 
     def __init__(self):
         super().__init__(
