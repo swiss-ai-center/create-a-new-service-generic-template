@@ -14,12 +14,9 @@ from common_code.tasks.service import TasksService
 from common_code.tasks.models import TaskData
 from common_code.service.models import Service
 from common_code.service.enums import ServiceStatus
-from common_code.common.enums import (
-    FieldDescriptionType,
-    ExecutionUnitTagName,
-    ExecutionUnitTagAcronym,
-)
+from common_code.common.enums import FieldDescriptionType, ExecutionUnitTagName, ExecutionUnitTagAcronym
 from common_code.common.models import FieldDescription, ExecutionUnitTag
+from contextlib import asynccontextmanager
 
 # Imports required by the service's model
 # TODO: 1. ADD REQUIRED IMPORTS (ALSO IN THE REQUIREMENTS.TXT)
@@ -84,6 +81,56 @@ class MyService(Service):
         }
 
 
+service_service: ServiceService | None = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Manual instances because startup events doesn't support Dependency Injection
+    # https://github.com/tiangolo/fastapi/issues/2057
+    # https://github.com/tiangolo/fastapi/issues/425
+
+    # Global variable
+    global service_service
+
+    # Startup
+    logger = get_logger(settings)
+    http_client = HttpClient()
+    storage_service = StorageService(logger)
+    my_service = MyService()
+    tasks_service = TasksService(logger, settings, http_client, storage_service)
+    service_service = ServiceService(logger, settings, http_client, tasks_service)
+
+    tasks_service.set_service(my_service)
+
+    # Start the tasks service
+    tasks_service.start()
+
+    async def announce():
+        retries = settings.engine_announce_retries
+        for engine_url in settings.engine_urls:
+            announced = False
+            while not announced and retries > 0:
+                announced = await service_service.announce_service(my_service, engine_url)
+                retries -= 1
+                if not announced:
+                    time.sleep(settings.engine_announce_retry_delay)
+                    if retries == 0:
+                        logger.warning(
+                            f"Aborting service announcement after "
+                            f"{settings.engine_announce_retries} retries"
+                        )
+
+    # Announce the service to its engine
+    asyncio.ensure_future(announce())
+
+    yield
+
+    # Shutdown
+    for engine_url in settings.engine_urls:
+        await service_service.graceful_shutdown(my_service, engine_url)
+
+
 # TODO: 6. CHANGE THE API DESCRIPTION AND SUMMARY
 api_description = """My service
 bla bla bla...
@@ -95,6 +142,7 @@ bla bla bla...
 # Define the FastAPI application with information
 # TODO: 7. CHANGE THE API TITLE, VERSION, CONTACT AND LICENSE
 app = FastAPI(
+    lifespan=lifespan,
     title="Sample Service API.",
     description=api_description,
     version="0.0.1",
@@ -130,57 +178,3 @@ app.add_middleware(
 @app.get("/", include_in_schema=False)
 async def root():
     return RedirectResponse("/docs", status_code=301)
-
-
-service_service: ServiceService | None = None
-
-
-@app.on_event("startup")
-async def startup_event():
-    # Manual instances because startup events doesn't support Dependency Injection
-    # https://github.com/tiangolo/fastapi/issues/2057
-    # https://github.com/tiangolo/fastapi/issues/425
-
-    # Global variable
-    global service_service
-
-    logger = get_logger(settings)
-    http_client = HttpClient()
-    storage_service = StorageService(logger)
-    my_service = MyService()
-    tasks_service = TasksService(logger, settings, http_client, storage_service)
-    service_service = ServiceService(logger, settings, http_client, tasks_service)
-
-    tasks_service.set_service(my_service)
-
-    # Start the tasks service
-    tasks_service.start()
-
-    async def announce():
-        retries = settings.engine_announce_retries
-        for engine_url in settings.engine_urls:
-            announced = False
-            while not announced and retries > 0:
-                announced = await service_service.announce_service(
-                    my_service, engine_url
-                )
-                retries -= 1
-                if not announced:
-                    time.sleep(settings.engine_announce_retry_delay)
-                    if retries == 0:
-                        logger.warning(
-                            f"Aborting service announcement after "
-                            f"{settings.engine_announce_retries} retries"
-                        )
-
-    # Announce the service to its engine
-    asyncio.ensure_future(announce())
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    # Global variable
-    global service_service
-    my_service = MyService()
-    for engine_url in settings.engine_urls:
-        await service_service.graceful_shutdown(my_service, engine_url)
