@@ -27,7 +27,7 @@ TODO
 
 ## Checklist
 
-These checklists allow you to ensure ensure everything is set up correctly.
+These checklists allow you to ensure everything is set up correctly.
 
 ### Common tasks
 
