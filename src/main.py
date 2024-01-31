@@ -71,8 +71,8 @@ class MyService(Service):
     # TODO: 5. CHANGE THE PROCESS METHOD (CORE OF THE SERVICE)
     def process(self, data):
         # NOTE that the data is a dictionary with the keys being the field names set in the data_in_fields
-        raw = data["image"].data
-        input_type = data["image"].type
+        # raw = data["image"].data
+        # input_type = data["image"].type
         # ... do something with the raw data
 
         # NOTE that the result must be a dictionary with the keys being the field names set in the data_out_fields
