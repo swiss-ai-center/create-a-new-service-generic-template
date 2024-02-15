@@ -71,6 +71,8 @@ class MyService(Service):
     # TODO: 5. CHANGE THE PROCESS METHOD (CORE OF THE SERVICE)
     def process(self, data):
         # NOTE that the data is a dictionary with the keys being the field names set in the data_in_fields
+        # The objects in the data variable are always bytes. It is necessary to convert them to the desired type
+        # before using them.
         # raw = data["image"].data
         # input_type = data["image"].type
         # ... do something with the raw data
