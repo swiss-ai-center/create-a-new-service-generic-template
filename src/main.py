@@ -65,6 +65,8 @@ class MyService(Service):
                 ),
             ],
             has_ai=False,
+            # OPTIONAL: CHANGE THE DOCS URL TO YOUR SERVICE'S DOCS
+            docs_url="https://docs.swiss-ai-center.ch/reference/core-concepts/service/",
         )
         self._logger = get_logger(settings)
 
