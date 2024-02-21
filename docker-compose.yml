@@ -1,6 +1,5 @@
 services:
   service:
-    container_name: service
     build:
       context: .
       dockerfile: development.Dockerfile
