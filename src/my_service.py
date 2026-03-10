@@ -21,6 +21,7 @@ bla bla bla...
 api_title = "My Service API"
 version = "0.0.1"
 
+
 class MyService(Service):
     # TODO: 2. CHANGE THIS DESCRIPTION
     """
@@ -80,6 +81,3 @@ class MyService(Service):
         return {
             "result": TaskData(data=..., type=FieldDescriptionType.APPLICATION_JSON)
         }
-
-
-

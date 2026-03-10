@@ -19,6 +19,7 @@ settings = get_settings()
 # Global variable
 service_service: ServiceService | None = None
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Manual instances because startup events doesn't support Dependency Injection
