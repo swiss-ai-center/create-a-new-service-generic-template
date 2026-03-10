@@ -1,4 +1,6 @@
-src/my_service.py
+src/*
+!src/main.py
+!src/utils.py
 README.md
 requirements.txt
 pyproject.toml
