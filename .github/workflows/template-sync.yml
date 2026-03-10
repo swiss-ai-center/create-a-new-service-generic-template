@@ -1,9 +1,9 @@
 name: Template Sync
 
 on:
-  # Cronjob trigger (runs every Sunday at midnight)
+  # Cronjob trigger (runs on the 1st of every month at midnight)
   schedule:
-  - cron: "0 0 * * 0"
+  - cron: "0 0 1 * *"
   # Manual trigger
   workflow_dispatch:
 

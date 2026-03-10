@@ -15,14 +15,14 @@ from common_code.service.enums import ServiceStatus
 from common_code.common.enums import FieldDescriptionType, ExecutionUnitTagName, ExecutionUnitTagAcronym
 from common_code.common.models import FieldDescription, ExecutionUnitTag
 from utils import lifespan
-from my_service import api_description
+from my_service import api_description,api_title
 
 
 # Define the FastAPI application with information
 # TODO: 7. CHANGE THE API TITLE, VERSION, CONTACT AND LICENSE
 app = FastAPI(
     lifespan=lifespan,
-    title="Sample Service API.",
+    title=api_title,
     description=api_description,
     version="0.0.1",
     contact={

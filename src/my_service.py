@@ -18,6 +18,8 @@ api_summary = """My service
 bla bla bla...
 """
 
+api_title = "My Service API"
+
 class MyService(Service):
     # TODO: 2. CHANGE THIS DESCRIPTION
     """
