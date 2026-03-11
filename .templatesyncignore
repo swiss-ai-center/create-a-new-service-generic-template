@@ -6,3 +6,4 @@ pyproject.toml
 Dockerfile
 development.Dockerfile
 kubernetes/stateful.yml
+docker_compose.yml
