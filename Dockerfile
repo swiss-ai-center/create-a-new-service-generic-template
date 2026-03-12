@@ -9,11 +9,10 @@ FROM python:3.11
 WORKDIR /app
 
 # Copy requirements file
-COPY ./requirements.txt .
-COPY ./requirements-all.txt .
+COPY ./uv.lock .
 
 # Install dependencies
-RUN pip install --requirement requirements.txt --requirement requirements-all.txt
+RUN uv sync
 
 # Copy sources
 COPY src src
