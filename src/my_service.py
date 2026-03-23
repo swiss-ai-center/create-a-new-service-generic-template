@@ -41,7 +41,10 @@ class MyService(Service):
             summary=api_summary,
             description=api_description,
             status=ServiceStatus.AVAILABLE,
-            # TODO: 4. CHANGE THE INPUT AND OUTPUT FIELDS, THE TAGS AND THE HAS_AI VARIABLE
+            # TODO: 4. CHANGE THE INPUT AND OUTPUT FIELDS, THE TAGS, FORMAT_HINT AND THE HAS_AI VARIABLE
+            # Examples of output format_hint are present below. Those are optional and
+            # can be used to provide more information about the expected output, which can be useful
+            # for debugging and for users of the service.
             data_in_fields=[
                 FieldDescription(
                     name="image",
@@ -53,7 +56,15 @@ class MyService(Service):
             ],
             data_out_fields=[
                 FieldDescription(
-                    name="result", type=[FieldDescriptionType.APPLICATION_JSON]
+                    name="result", type=[FieldDescriptionType.APPLICATION_JSON],
+                    # Optional format hint to provide more information about the expected output
+                    # CSV and ZIP tree format exist and examples are provided in the documentation:
+                    # https://docs.swiss-ai-center.ch/tutorials/create-a-service-to-rotate-an-image/#update-the-format-hint
+                    #
+                    # format_hint={
+                    #     "name": "example.png",
+                    #     "bbox": [100, 100, 200, 200],
+                    # }
                 ),
             ],
             tags=[
