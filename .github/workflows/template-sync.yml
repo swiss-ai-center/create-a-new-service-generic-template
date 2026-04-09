@@ -21,6 +21,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.TEMPLATE_SYNC_PAT }}
+          ref: dev
 
       # Run the template sync action
       - name: actions-template-sync
