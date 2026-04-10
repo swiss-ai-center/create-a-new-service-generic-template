@@ -23,7 +23,8 @@ jobs:
           token: ${{ secrets.TEMPLATE_SYNC_PAT }}
           ref: dev
           fetch-depth: 0
-
+      - name: Attach detached HEAD to dev branch
+        run: git checkout -B dev
       # Run the template sync action
       - name: actions-template-sync
         uses: AndreasAugustin/actions-template-sync@v2
