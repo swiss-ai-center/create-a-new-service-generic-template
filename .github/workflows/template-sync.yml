@@ -22,6 +22,7 @@ jobs:
         with:
           token: ${{ secrets.TEMPLATE_SYNC_PAT }}
           ref: dev
+          fetch-depth: 0
 
       # Run the template sync action
       - name: actions-template-sync
